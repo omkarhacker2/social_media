@@ -1,4 +1,29 @@
 <link rel="stylesheet" href="/css/user_profile.css">
-<h1>
-    Codeial / Profile Page
-</h1>
+<h1>Codeial / Profile Page</h1>
+
+<p>Name: <%= user.name %></p>
+<p>Email: <%= user.email %></p>
+<button id="sign-out-btn">Sign Out</button> <!-- Change the input to a button element -->
+
+
+<!-- Add this script at the bottom of the users_profile.ejs template -->
+<script>
+    // Add a click event listener to the "Sign Out" button
+    document.getElementById('sign-out-btn').addEventListener('click', function() {
+      // Send a POST request to the server to sign out the user
+      fetch('/users/sign-out', {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        // If the sign-out is successful, redirect the user to the sign-in page
+        if (data.success) {
+          window.location.href = '/users/sign-in';
+        }
+      })
+      .catch(error => {
+        console.error('Error during sign-out:', error);
+      });
+    });
+  </script>
+  

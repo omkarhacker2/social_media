@@ -60,11 +60,28 @@
 const User = require('../models/user');
 
 
-module.exports.profile = function(req, res){
-    return res.render('user_profile', {
-        title: 'User Profile'
-    })
-}
+module.exports.profile = function(req, res) {
+  if (req.cookies.user_id) {
+    User.findById(req.cookies.user_id)
+      .then(user => {
+        if (user) {
+          return res.render('user_profile', {
+            title: "User Profile",
+            user: user
+          });
+        } else {
+          return res.redirect('/users/sign-in');
+        }
+      })
+      .catch(err => {
+        console.log('error in finding user:', err);
+        return res.redirect('/users/sign-in');
+      });
+  } else {
+    return res.redirect('/users/sign-in');
+  }
+};
+
 
 
 // render the sign up page
@@ -115,8 +132,42 @@ module.exports.create = function(req, res) {
   
 
 // sign in and create a session for the user
-module.exports.createSession = function(req, res){
-    // TODO later
-}
+module.exports.createSession = function(req, res) {
+  // TODO later
+
+  // steps to authenticate
+  // find the user
+  User.findOne({ email: req.body.email })
+    .then(user => {
+      // handle user found
+      if (user) {
+        // handle password which doesn't match
+        if (user.password !== req.body.password) {
+          return res.redirect('back');
+        }
+
+        // handle session creation
+        res.cookie('user_id', user.id);
+        return res.redirect('/users/profile');
+      } else {
+        // handle user not found
+        return res.redirect('back');
+      }
+    })
+    .catch(err => {
+      console.log('error in finding user in signing in', err);
+      return res.redirect('back');
+    });
+};
+
+
+// Assuming you have already imported the necessary modules and have access to the User model
+
+// Sign-out function
+module.exports.signOut = function (req, res) {
+  // Clear the user_id cookie to sign out the user
+  res.clearCookie('user_id');
+  return res.json({ success: true }); // Return a JSON response to indicate success
+};
 
 

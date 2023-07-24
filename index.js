@@ -28,7 +28,9 @@ const port = 8000;
 const expressLayouts = require('express-ejs-layouts');
 const db = require('./config/mongoose');
 
-app.use(express.urlencoded());
+//app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use(cookieParser());
 // Replace this line (older version without extended option)
